@@ -199,7 +199,7 @@ async function loadData() {
     allContracts = await res.json();
     if (!Array.isArray(allContracts)) throw new Error(allContracts.error || 'Unexpected response');
     document.getElementById('lastUpdated').textContent =
-      'Updated ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      'Data as at: ' + new Date().toLocaleString('en-GB');
     populateFilters();
     applyFilters();
   } catch (err) {
