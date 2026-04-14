@@ -242,7 +242,7 @@ function clearFilters() {
 
 function filterContracts(f) {
   return allContracts.filter(c => {
-    if (!c.balance || c.balance <= 0) return false;
+    if (!c.balance || c.balance < 1) return false;
     const days = daysSince(c.contractStatusDate);
     if (f.owner  && c.owner          !== f.owner)  return false;
     if (f.status && c.contractStatus !== f.status) return false;
