@@ -100,7 +100,7 @@ exports.handler = async () => {
       if (c.balance < 1) return false;
       // Exclude completed / cancelled
       const status = (c.contractStatus || '').toLowerCase().trim();
-      if (status === 'completed' || status === 'cancelled') return false;
+      if (status === 'completed' || status === 'cancelled' || status === 'approved for install') return false;
       return true;
     });
 
