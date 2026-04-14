@@ -1,77 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TV Windows – Outstanding Balances Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; }
-    .header { background: #527F6E; color: #fff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
-    .header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.3px; }
-    .header-right { display: flex; align-items: center; gap: 12px; }
-    .last-updated { font-size: 0.78rem; opacity: 0.85; }
-    .btn-refresh { background: #fff; color: #527F6E; border: none; padding: 7px 16px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
-    .btn-refresh:hover { opacity: 0.85; }
-    .content { padding: 20px 24px; max-width: 1500px; margin: 0 auto; }
-    .kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 20px; }
-    .kpi-card { background: #fff; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border-left: 5px solid #ccc; }
-    .kpi-card.green  { border-left-color: #28a745; }
-    .kpi-card.blue   { border-left-color: #17a2b8; }
-    .kpi-card.orange { border-left-color: #fd7e14; }
-    .kpi-card.purple { border-left-color: #6f42c1; }
-    .kpi-card.yellow { border-left-color: #ffc107; }
-    .kpi-card.red    { border-left-color: #dc3545; }
-    .kpi-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 0.6px; margin-bottom: 6px; }
-    .kpi-value { font-size: 1.9rem; font-weight: 700; color: #1a1a1a; line-height: 1.1; }
-    .kpi-sub   { font-size: 0.76rem; color: #999; margin-top: 4px; }
-    .filters-bar { background: #fff; border-radius: 8px; padding: 14px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
-    .filter-group { display: flex; flex-direction: column; gap: 4px; min-width: 160px; }
-    .filter-group label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #666; letter-spacing: 0.5px; }
-    .filter-group select { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.83rem; background: #fff; cursor: pointer; }
-    .filter-group select:focus { outline: none; border-color: #527F6E; }
-    .btn-clear { padding: 7px 14px; background: #f0f2f5; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; cursor: pointer; color: #555; align-self: flex-end; }
-    .btn-clear:hover { background: #e2e6ea; }
-    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-    .chart-card { background: #fff; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-    .chart-card h2 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 0.6px; margin-bottom: 14px; }
-    .chart-wrap { position: relative; height: 260px; }
-    .table-card { background: #fff; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 20px; }
-    .table-card h2 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 0.6px; margin-bottom: 14px; }
-    .table-meta { font-size: 0.78rem; color: #888; margin-bottom: 10px; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
-    th { background: #f8f9fa; font-weight: 700; text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.5px; color: #555; padding: 9px 10px; text-align: left; border-bottom: 2px solid #e9ecef; white-space: nowrap; cursor: pointer; user-select: none; }
-    th:hover { background: #e9ecef; }
-    th .sort-icon { margin-left: 4px; opacity: 0.4; font-style: normal; }
-    th.sorted .sort-icon { opacity: 1; }
-    td { padding: 8px 10px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #f8fffe; }
-    .row-warn td { background: #fffdf0; }
-    .row-overdue td { background: #fff5f5; }
-    .row-warn:hover td { background: #fffbdc; }
-    .row-overdue:hover td { background: #ffe8e8; }
-    .num { text-align: right; font-variant-numeric: tabular-nums; }
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
-    .badge-current { background: #d4edda; color: #155724; }
-    .badge-warn    { background: #fff3cd; color: #856404; }
-    .badge-overdue { background: #f8d7da; color: #721c24; }
-    .contract-num { font-weight: 600; color: #527F6E; font-size: 0.82rem; }
-    .balance-val { font-weight: 700; color: #c0392b; }
-    .loading { text-align: center; padding: 60px 20px; color: #888; font-size: 0.95rem; }
-    .error-msg { background: #f8d7da; color: #721c24; border-radius: 6px; padding: 14px 18px; margin: 20px 0; font-size: 0.88rem; }
-    @media (max-width: 1100px) {
-      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
-      .charts-row { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 640px) {
-      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TV Windows – Outstanding Balances Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; }
+.header { background: #527F6E; color: #fff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.3px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.last-updated { font-size: 0.78rem; opacity: 0.85; }
+.btn-refresh { background: #fff; color: #527F6E; border: none; padding: 7px 16px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+.btn-refresh:hover { opacity: 0.85; }
+.content { padding: 20px 24px; max-width: 1500px; margin: 0 auto; }
+.kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+.kpi-card { background: #fff; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border-left: 5px solid #ccc; }
+.kpi-card.green  { border-left-color: #28a745; }
+.kpi-card.blue   { border-left-color: #17a2b8; }
+.kpi-card.orange { border-left-color: #fd7e14; }
+.kpi-card.purple { border-left-color: #6f42c1; }
+.kpi-card.yellow { border-left-color: #ffc107; }
+.kpi-card.red    { border-left-color: #dc3545; }
+.kpi-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 0.6px; margin-bottom: 6px; }
+.kpi-value { font-size: 1.9rem; font-weight: 700; color: #1a1a1a; line-height: 1.1; }
+.kpi-sub { font-size: 0.76rem; color: #999; margin-top: 4px; }
+.filters-bar { background: #fff; border-radius: 8px; padding: 14px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.filter-group { display: flex; flex-direction: column; gap: 4px; min-width: 160px; }
+.filter-group label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #666; letter-spacing: 0.5px; }
+.filter-group select { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.83rem; background: #fff; cursor: pointer; }
+.filter-group select:focus { outline: none; border-color: #527F6E; }
+.btn-clear { padding: 7px 14px; background: #f0f2f5; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; cursor: pointer; color: #555; align-self: flex-end; }
+.btn-clear:hover { background: #e2e6ea; }
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.chart-card { background: #fff; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.chart-card h2 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 0.6px; margin-bottom: 14px; }
+.chart-wrap { position: relative; height: 260px; }
+.table-card { background: #fff; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 20px; }
+.table-card h2 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 0.6px; margin-bottom: 14px; }
+.table-meta { font-size: 0.78rem; color: #888; margin-bottom: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+th { background: #f8f9fa; font-weight: 700; text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.5px; color: #555; padding: 9px 10px; text-align: left; border-bottom: 2px solid #e9ecef; white-space: nowrap; cursor: pointer; user-select: none; }
+th:hover { background: #e9ecef; }
+th .sort-icon { margin-left: 4px; opacity: 0.4; font-style: normal; }
+th.sorted .sort-icon { opacity: 1; }
+td { padding: 8px 10px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f8fffe; }
+.row-warn td { background: #fffdf0; }
+.row-overdue td { background: #fff5f5; }
+.row-warn:hover td { background: #fffbdc; }
+.row-overdue:hover td { background: #ffe8e8; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+.badge-current { background: #d4edda; color: #155724; }
+.badge-warn    { background: #fff3cd; color: #856404; }
+.badge-overdue { background: #f8d7da; color: #721c24; }
+.contract-num { font-weight: 600; color: #527F6E; font-size: 0.82rem; }
+.balance-val  { font-weight: 700; color: #c0392b; }
+.loading { text-align: center; padding: 60px 20px; color: #888; font-size: 0.95rem; }
+.error-msg { background: #f8d7da; color: #721c24; border-radius: 6px; padding: 14px 18px; margin: 20px 0; font-size: 0.88rem; }
+@media (max-width: 900px)  { .kpi-grid { grid-template-columns: repeat(3, 1fr); } .charts-row { grid-template-columns: 1fr; } }
+@media (max-width: 640px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
 </head>
 <body>
-
 <div class="header">
   <h1>TV Windows &amp; Doors — Outstanding Balances</h1>
   <div class="header-right">
@@ -79,7 +73,6 @@
     <button class="btn-refresh" onclick="loadData()">↻ Refresh</button>
   </div>
 </div>
-
 <div class="content">
   <div class="kpi-grid">
     <div class="kpi-card blue">
@@ -154,16 +147,13 @@
   <div class="table-card">
     <h2>All Outstanding Balances</h2>
     <div class="table-meta" id="tableMeta"></div>
-    <div id="tableWrap">
-      <div class="loading">Loading data…</div>
-    </div>
+    <div id="tableWrap"><div class="loading">Loading data…</div></div>
   </div>
 </div>
 
 <script>
 const WARN_DAYS    = 14;
 const OVERDUE_DAYS = 28;
-
 let allContracts = [];
 let charts = {};
 let sortCol = 'balance';
@@ -188,9 +178,9 @@ function ageBadge(days) {
 }
 
 function ageFlag(days) {
-  if (days === null) return 'current';
-  if (days >= OVERDUE_DAYS) return 'overdue';
-  if (days >= WARN_DAYS)    return 'warn';
+  if (days === null)         return 'current';
+  if (days >= OVERDUE_DAYS)  return 'overdue';
+  if (days >= WARN_DAYS)     return 'warn';
   return 'current';
 }
 
@@ -250,16 +240,21 @@ function clearFilters() {
   applyFilters();
 }
 
-function applyFilters() {
-  const f = getFilters();
-  const filtered = allContracts.filter(c => {
+function filterContracts(f) {
+  return allContracts.filter(c => {
+    if (!c.balance || c.balance <= 0) return false;
     const days = daysSince(c.contractStatusDate);
-    if (f.owner  && c.owner !== f.owner)           return false;
+    if (f.owner  && c.owner          !== f.owner)  return false;
     if (f.status && c.contractStatus !== f.status) return false;
-    if (f.type   && c.contractType !== f.type)     return false;
-    if (f.age    && ageFlag(days) !== f.age)        return false;
+    if (f.type   && c.contractType   !== f.type)   return false;
+    if (f.age    && ageFlag(days)    !== f.age)     return false;
     return true;
   });
+}
+
+function applyFilters() {
+  const f = getFilters();
+  const filtered = filterContracts(f);
   updateKPIs(filtered);
   updateCharts(filtered);
   renderTable(filtered);
@@ -269,11 +264,11 @@ function applyFilters() {
 }
 
 function updateKPIs(contracts) {
-  const total     = contracts.length;
-  const netValue  = contracts.reduce((s,c) => s + (c.netValue  || 0), 0);
-  const balance   = contracts.reduce((s,c) => s + (c.balance   || 0), 0);
-  const pct       = netValue > 0 ? (balance / netValue * 100) : 0;
-  const warnCount = contracts.filter(c => { const d = daysSince(c.contractStatusDate); return d !== null && d >= WARN_DAYS && d < OVERDUE_DAYS; }).length;
+  const total    = contracts.length;
+  const netValue = contracts.reduce((s,c) => s + (c.netValue || 0), 0);
+  const balance  = contracts.reduce((s,c) => s + (c.balance  || 0), 0);
+  const pct      = netValue > 0 ? (balance / netValue * 100) : 0;
+  const warnCount    = contracts.filter(c => { const d = daysSince(c.contractStatusDate); return d !== null && d >= WARN_DAYS    && d < OVERDUE_DAYS; }).length;
   const overdueCount = contracts.filter(c => { const d = daysSince(c.contractStatusDate); return d !== null && d >= OVERDUE_DAYS; }).length;
   document.getElementById('kpiJobs').textContent     = total.toLocaleString('en-GB');
   document.getElementById('kpiNetValue').textContent = fmtK(netValue);
@@ -299,14 +294,18 @@ function buildDonut(canvasId, labels, values) {
       datasets: [{
         data: combined.map(x => x.v),
         backgroundColor: PALETTE.slice(0, combined.length),
-        borderWidth: 2, borderColor: '#fff',
+        borderWidth: 2,
+        borderColor: '#fff',
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: { position: 'right', labels: { font: { size: 11 }, boxWidth: 12, padding: 10 } },
-        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${fmt(ctx.parsed)} (${(ctx.parsed / ctx.dataset.data.reduce((a,b)=>a+b,0)*100).toFixed(1)}%)` } }
+        tooltip: { callbacks: {
+          label: ctx => ` ${ctx.label}: ${fmt(ctx.parsed)} (${(ctx.parsed / ctx.dataset.data.reduce((a,b)=>a+b,0)*100).toFixed(1)}%)`
+        }}
       }
     }
   });
@@ -316,6 +315,7 @@ function updateCharts(contracts) {
   const statusMap = {};
   contracts.forEach(c => { statusMap[c.contractStatus || 'Unknown'] = (statusMap[c.contractStatus || 'Unknown'] || 0) + c.balance; });
   buildDonut('chartStatus', Object.keys(statusMap), Object.values(statusMap));
+
   const typeMap = {};
   contracts.forEach(c => { typeMap[c.contractType || 'Unknown'] = (typeMap[c.contractType || 'Unknown'] || 0) + c.balance; });
   buildDonut('chartType', Object.keys(typeMap), Object.values(typeMap));
@@ -330,7 +330,7 @@ function sortContracts(contracts) {
     }
     if (av == null) av = '';
     if (bv == null) bv = '';
-    if (av < bv) return sortDir;
+    if (av < bv) return  sortDir;
     if (av > bv) return -sortDir;
     return 0;
   });
@@ -341,23 +341,26 @@ function renderTable(contracts) {
   const totalBalance = contracts.reduce((s,c) => s + (c.balance || 0), 0);
   document.getElementById('tableMeta').textContent =
     `${sorted.length} job${sorted.length !== 1 ? 's' : ''} — Total balance: ${fmt(totalBalance)}`;
+
   const cols = [
-    { key: 'contractNumber', label: 'Contract #' },
-    { key: 'customer',       label: 'Customer' },
-    { key: 'owner',          label: 'Owner' },
-    { key: 'contractType',   label: 'Type' },
-    { key: 'netValue',       label: 'Net Value', num: true },
-    { key: 'balance',        label: 'Balance', num: true },
-    { key: 'contractStatus', label: 'Status' },
-    { key: 'contractStatusDate', label: 'Status Date' },
-    { key: 'days',           label: 'Days' },
-    { key: 'ageFlag',        label: 'Age' },
+    { key: 'contractNumber',    label: 'Contract #' },
+    { key: 'customer',          label: 'Customer' },
+    { key: 'owner',             label: 'Owner' },
+    { key: 'contractType',      label: 'Type' },
+    { key: 'netValue',          label: 'Net Value', num: true },
+    { key: 'balance',           label: 'Balance',   num: true },
+    { key: 'contractStatus',    label: 'Status' },
+    { key: 'contractStatusDate',label: 'Status Date' },
+    { key: 'days',              label: 'Days' },
+    { key: 'ageFlag',           label: 'Age' },
   ];
+
   const thead = cols.map(col => {
     const isSorted = sortCol === col.key || (col.key === 'days' && sortCol === 'contractStatusDate');
     const icon = isSorted ? (sortDir === -1 ? ' ▼' : ' ▲') : ' ⇅';
     return `<th class="${isSorted ? 'sorted' : ''}" onclick="setSort('${col.key === 'days' ? 'contractStatusDate' : col.key}')">${col.label}<i class="sort-icon">${icon}</i></th>`;
   }).join('');
+
   const tbody = sorted.map(c => {
     const days = daysSince(c.contractStatusDate);
     const dateStr = c.contractStatusDate
@@ -366,22 +369,21 @@ function renderTable(contracts) {
     const rc = rowClass(days ?? 0);
     return `<tr class="${rc}"><td class="contract-num">${escHtml(c.contractNumber)}</td><td>${escHtml(c.customer)}</td><td>${escHtml(c.owner)}</td><td>${escHtml(c.contractType)}</td><td class="num">${fmt(c.netValue)}</td><td class="num balance-val">${fmt(c.balance)}</td><td>${escHtml(c.contractStatus)}</td><td>${dateStr}</td><td class="num">${days !== null ? days : '–'}</td><td>${ageBadge(days)}</td></tr>`;
   }).join('');
-  document.getElementById('tableWrap').innerHTML = `<table><thead><tr>${thead}</tr></thead><tbody>${tbody || '<tr><td colspan="10" style="text-align:center;padding:30px;color:#888">No matching records</td></tr>'}</tbody></table>`;
+
+  document.getElementById('tableWrap').innerHTML =
+    `<table><thead><tr>${thead}</tr></thead><tbody>${tbody ||
+    '<tr><td colspan="10" style="text-align:center;padding:30px;color:#888">No matching records</td></tr>'
+    }</tbody></table>`;
 }
 
 function setSort(col) {
-  if (sortCol === col) { sortDir = -sortDir; }
-  else { sortCol = col; sortDir = col === 'balance' || col === 'netValue' ? -1 : 1; }
-  const f = getFilters();
-  const filtered = allContracts.filter(c => {
-    const days = daysSince(c.contractStatusDate);
-    if (f.owner  && c.owner !== f.owner)           return false;
-    if (f.status && c.contractStatus !== f.status) return false;
-    if (f.type   && c.contractType !== f.type)     return false;
-    if (f.age    && ageFlag(days) !== f.age)        return false;
-    return true;
-  });
-  renderTable(filtered);
+  if (sortCol === col) {
+    sortDir = -sortDir;
+  } else {
+    sortCol = col;
+    sortDir = (col === 'balance' || col === 'netValue') ? -1 : 1;
+  }
+  renderTable(filterContracts(getFilters()));
 }
 
 loadData();
