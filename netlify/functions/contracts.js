@@ -97,7 +97,7 @@ exports.handler = async () => {
       const type     = (c.contractType     || '').toLowerCase();
       if (pipeline.includes('service') || type.includes('service')) return false;
       // Must have a positive balance
-      if (c.balance <= 0) return false;
+      if (c.balance < 1) return false;
       // Exclude completed / cancelled
       const status = (c.contractStatus || '').toLowerCase().trim();
       if (status === 'completed' || status === 'cancelled') return false;
