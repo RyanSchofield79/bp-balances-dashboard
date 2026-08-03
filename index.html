@@ -63,11 +63,57 @@ tr:hover td { background: #f8fffe; }
 .error-msg { background: #f8d7da; color: #721c24; border-radius: 6px; padding: 14px 18px; margin: 20px 0; font-size: 0.88rem; }
 @media (max-width: 900px)  { .kpi-grid { grid-template-columns: repeat(3, 1fr); } .charts-row { grid-template-columns: 1fr; } }
 @media (max-width: 640px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
-</style>
+
+    /* ── Rules & filters panel ────────────────────────────── */
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .doc-open-btn { width:20px; height:20px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.55); background:none; color:#fff; font-size:12px; font-weight:700; line-height:1; cursor:pointer; font-family:Georgia, "Times New Roman", serif; display:inline-flex; align-items:center; justify-content:center; padding:0; opacity:0.75; flex:none; }
+    .doc-open-btn:hover { opacity:1; background:rgba(255,255,255,0.2); }
+    .doc-overlay { position: fixed; inset: 0; background: rgba(17,24,39,0.55); display: none; align-items: flex-start; justify-content: center; padding: 40px 20px; z-index: 900; }
+    .doc-overlay.open { display: flex; }
+    .doc-modal { background:#fff; width:100%; max-width: 880px; max-height: calc(100vh - 80px); border-radius:10px; display:flex; flex-direction:column; overflow:hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+    .doc-head { background:#527F6E; color:#fff; padding:16px 22px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+    .doc-head h2 { font-size:16px; font-weight:600; }
+    .doc-head .sub { font-size:11.5px; opacity:0.75; margin-top:3px; }
+    .doc-close { background:none; border:none; color:#fff; font-size:24px; line-height:1; cursor:pointer; opacity:0.8; padding:0 2px; }
+    .doc-close:hover { opacity:1; }
+    .doc-nav { display:flex; flex-wrap:wrap; gap:6px; padding:12px 22px; border-bottom:1px solid #e5e7eb; background:#fafafa; }
+    .doc-nav a { font-size:11.5px; color:#527F6E; text-decoration:none; border:1px solid #d7e2dd; background:#fff; padding:4px 9px; border-radius:20px; }
+    .doc-nav a:hover { background:#527F6E; color:#fff; border-color:#527F6E; }
+    .doc-body { overflow-y:auto; padding: 4px 22px 22px; }
+    .doc-sec { padding-top:20px; }
+    .doc-sec h3 { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#527F6E; padding-bottom:6px; border-bottom:1px solid #e5e7eb; margin-bottom:10px; }
+    .doc-sec p { font-size:13px; line-height:1.65; color:#374151; margin-bottom:8px; }
+    .doc-sec ul { margin:0 0 8px 18px; }
+    .doc-sec li { font-size:13px; line-height:1.65; color:#374151; margin-bottom:4px; }
+    .doc-sec table { width:100%; border-collapse:collapse; margin-bottom:8px; }
+    .doc-sec th { text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:#6b7280; border-bottom:1px solid #e5e7eb; padding:6px 8px 6px 0; font-weight:600; }
+    .doc-sec td { font-size:12.5px; line-height:1.55; color:#374151; border-bottom:1px solid #f3f4f6; padding:7px 8px 7px 0; vertical-align:top; }
+    .doc-sec td:first-child { font-weight:600; color:#222; width:34%; }
+    .doc-sec code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size:11.5px; background:#f3f4f6; border:1px solid #e5e7eb; border-radius:3px; padding:1px 4px; color:#111; }
+    .doc-tech summary { cursor:pointer; font-size:12.5px; color:#6b7280; padding:4px 0; }
+    .doc-tech summary:hover { color:#527F6E; }
+    .doc-tech[open] summary { margin-bottom:6px; }
+    .doc-tag { display:inline-block; font-size:10px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; padding:2px 7px; border-radius:20px; margin-right:6px; }
+    .doc-tag-in { background:#dcfce7; color:#166534; }
+    .doc-tag-out { background:#fee2e2; color:#991b1b; }
+    .doc-warn { background:#fffbeb; border:1px solid #fde68a; border-left:3px solid #d97706; border-radius:6px; padding:10px 12px; margin-bottom:8px; }
+    .doc-warn p { margin:0; font-size:12.5px; color:#78350f; }
+    .doc-foot { border-top:1px solid #e5e7eb; background:#fafafa; padding:12px 22px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .doc-foot .meta { font-size:11.5px; color:#6b7280; }
+    .doc-foot .acts { display:flex; gap:8px; }
+    .doc-foot button, .doc-foot a.btn { font-size:12px; font-family:inherit; padding:5px 12px; border-radius:6px; border:1px solid #d1d5db; background:#fff; color:#374151; cursor:pointer; text-decoration:none; }
+    .doc-foot button:hover, .doc-foot a.btn:hover { background:#f3f4f6; }
+    @media print {
+      body > header, .container, footer, .doc-nav, .doc-close, .doc-foot .acts { display:none !important; }
+      .doc-overlay { position:static; display:block !important; padding:0; background:#fff; }
+      .doc-modal { max-width:none; max-height:none; box-shadow:none; border:none; }
+      .doc-body { overflow:visible; }
+    }
+  </style>
 </head>
 <body>
 <div class="header">
-  <h1>TV Windows &amp; Doors — Outstanding Balances</h1>
+  <div class="header-left"><h1>TV Windows &amp; Doors — Outstanding Balances</h1><button class="doc-open-btn" id="doc-btn" type="button" title="Rules &amp; filters" aria-label="Rules &amp; filters">i</button></div>
   <div class="header-right">
     <span class="last-updated" id="lastUpdated"></span>
     <button class="btn-refresh" onclick="loadData()">↻ Refresh</button>
@@ -388,5 +434,176 @@ function setSort(col) {
 
 loadData();
 </script>
+
+<!-- ══════════ RULES & FILTERS PANEL ══════════ -->
+<div class="doc-overlay" id="doc-overlay" role="dialog" aria-modal="true" aria-labelledby="doc-title">
+  <div class="doc-modal">
+    <div class="doc-head">
+      <div>
+        <h2 id="doc-title"></h2>
+        <div class="sub" id="doc-sub"></div>
+      </div>
+      <button class="doc-close" id="doc-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="doc-nav" id="doc-nav"></div>
+    <div class="doc-body" id="doc-body"></div>
+    <div class="doc-foot">
+      <span class="meta" id="doc-meta"></span>
+      <span class="acts">
+        <button type="button" onclick="window.print()">Print / save as PDF</button>
+        <a class="btn" id="doc-repo" href="#" target="_blank" rel="noopener">View source repo</a>
+      </span>
+    </div>
+  </div>
+</div>
+
+<script>
+const DASHBOARD_DOC = {
+  title: "Outstanding Balances — rules & filters",
+  subtitle: "Finance · rschofield-bp-balances.netlify.app · repo: RyanSchofield79/bp-balances-dashboard",
+  version: "v1.0", reviewed: "3 Aug 2026", owner: "Ryan Schofield",
+  repo: "https://github.com/RyanSchofield79/bp-balances-dashboard",
+  sections: [
+    { id:"purpose", nav:"Purpose", title:"What this dashboard answers", type:"list",
+      items: [
+        "How much money is owed to us on live jobs, and on which contracts.",
+        "Which balances have gone stale — jobs whose status has not moved for two or four weeks.",
+        "Filtered by owner, status, contract type and age, so the chasing can be shared out.",
+        "It is a <strong>collections chasing list</strong>. It is not an aged debtors report and does not tie to the accounts system."
+      ] },
+    { id:"source", nav:"Refresh", title:"Where the data comes from & when it updates", type:"table",
+      head: ["",""],
+      rows: [
+        ["Source", "Business Pilot — live contracts carrying an outstanding balance"],
+        ["Updates", "<strong>Live every time you open the page.</strong> No caching, no saved copy."],
+        ["Refresh button", "<strong>↻ Refresh</strong> pulls the contract list again."],
+        ["How far back", "Contracts created in the last five years."],
+        ["If it can't reach Business Pilot", "An error is shown and the board stays empty."]
+      ] },
+    { id:"period", nav:"Period & dates", title:"Period & date rules", type:"list",
+      items: [
+        "There is <strong>no period filter</strong> — every live job with money outstanding is shown.",
+        "Ageing is measured from <code>currentStatusDate</code>: how long the job has sat in its current status.",
+        "<strong>Stalled &gt;2 Weeks</strong> means 14 days or more without a status change. <strong>Stalled &gt;4 Weeks</strong> means 28 days or more.",
+        "A job with no status date shows a grey “No date” badge and is counted in neither stalled bucket."
+      ] },
+    { id:"scope", nav:"In / out", title:"What's included and excluded", type:"inout",
+      included: [
+        "Live contracts with a balance of <strong>£1 or more</strong>."
+      ],
+      excluded: [
+        "<strong>Service work</strong> — pipeline or contract type containing “service”.",
+        "<strong>Balances under £1</strong> — catches pennies left by rounding that would otherwise clutter the list.",
+        "<strong>Statuses Completed, Cancelled and Approved For Install.</strong>"
+      ],
+      note: "“Approved For Install” is excluded because the balance is not yet chaseable at that stage — the job has not been done." },
+    { id:"metrics", nav:"Metrics", title:"Metric definitions", type:"table",
+      head: ["Metric","Definition"],
+      rows: [
+        ["Total Jobs","Count of contracts with a chaseable balance"],
+        ["Total Job Value","Σ <code>confirmedNetSaleValue</code> of those contracts"],
+        ["Total Balance Due","Σ outstanding balance"],
+        ["Balance %","Balance due ÷ total job value × 100"],
+        ["Stalled &gt;2 Weeks","No status change for 14 days or more"],
+        ["Stalled &gt;4 Weeks","No status change for 28 days or more"],
+        ["Days","Days since the last status change"]
+      ] },
+    { id:"fields", nav:"Field mapping", title:"Business Pilot field mapping", type:"table",
+      head: ["On the dashboard","Business Pilot field"],
+      rows: [
+        ["Contract","<code>contract.contractNumber</code>"],
+        ["Customer","<code>lead.contact.contactName</code>, then company name"],
+        ["Owner","<code>contract.currentOwner</code>"],
+        ["Type","<code>lead.leadType</code>, then <code>productType1</code>"],
+        ["Net Value","<code>confirmedNetSaleValue</code>"],
+        ["Balance","<code>balance</code>, falling back to <code>balanceDue</code>"],
+        ["Status / Status Date","<code>currentStatus</code> / <code>currentStatusDate</code>"],
+        ["Install Start","<code>installStart</code>"]
+      ] },
+    { id:"watch", nav:"Watch-outs", title:"Watch-outs & known limits", type:"warn",
+      items: [
+        "<strong>Ageing is status age, not invoice age.</strong> “Stalled 4 weeks” means the job has not changed status for a month — it does not mean the money is a month overdue. A balance can be genuinely late while the status keeps moving, and it will not be flagged.",
+        "<strong>Not an aged debtors report.</strong> Balances come from Business Pilot, not the accounts system, and take no account of agreed payment terms, deposits or stage payments. It will not reconcile to the ledger.",
+        "<strong>“Approved For Install” jobs are hidden.</strong> Money owed on jobs at that stage does not appear at all, so the total understates everything on the books.",
+        "<strong>Jobs with no status date are invisible to the stall counts</strong> — they show a grey “No date” badge and are quietly excluded from both buckets.",
+        "<strong>The under-£1 rule is a rounding filter</strong>, not a materiality judgement — a genuine 50p balance will never show.",
+        "<strong>No saved copy.</strong> If Business Pilot is unreachable the board is empty rather than stale."
+      ] },
+    { id:"tech", nav:"Technical", title:"Technical reference", type:"tech",
+      summary: "Endpoints, files and schedule — for maintenance, not for reading the numbers",
+      head: ["Item","Detail"],
+      rows: [
+        ["API","<code>api-zapier.businesspilot.co.uk</code> · <code>X-Api-Key</code> header"],
+        ["Endpoint","<code>POST /api/Contracts/find</code>, <code>dateAddedAfter</code> = 5 years ago"],
+        ["Paging","Yes — 500 per page"],
+        ["Function","<code>/.netlify/functions/contracts</code>"],
+        ["Thresholds","<code>WARN_DAYS = 14</code>, <code>OVERDUE_DAYS = 28</code> in index.html"],
+        ["Caching","<code>Cache-Control: no-store</code>"]
+      ] }
+  ]
+};
+
+/* ── Renderer — identical on every dashboard, do not edit per board ── */
+(function () {
+  var D = DASHBOARD_DOC;
+  document.getElementById('doc-title').innerHTML = D.title;
+  document.getElementById('doc-sub').innerHTML = D.subtitle;
+  document.getElementById('doc-meta').innerHTML = D.version + ' · last reviewed ' + D.reviewed + ' · owner ' + D.owner;
+  document.getElementById('doc-repo').href = D.repo;
+
+  var nav = document.getElementById('doc-nav');
+  var body = document.getElementById('doc-body');
+
+  D.sections.forEach(function (s) {
+    var a = document.createElement('a');
+    a.href = '#' + s.id; a.textContent = s.nav;
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.getElementById('sec-' + s.id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    nav.appendChild(a);
+
+    var sec = document.createElement('div');
+    sec.className = 'doc-sec'; sec.id = 'sec-' + s.id;
+    var html = '<h3>' + s.title + '</h3>';
+
+    if (s.type === 'text') {
+      html += '<p>' + s.body + '</p>';
+    } else if (s.type === 'list') {
+      html += '<ul>' + s.items.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul>';
+    } else if (s.type === 'table') {
+      var hasHead = s.head.some(function (h) { return h && h.length; });
+      html += '<table>' +
+              (hasHead ? '<thead><tr>' + s.head.map(function (h) { return '<th>' + h + '</th>'; }).join('') + '</tr></thead>' : '') +
+              '<tbody>' +
+              s.rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>'; }).join('') +
+              '</tbody></table>';
+    } else if (s.type === 'inout') {
+      html += '<p><span class="doc-tag doc-tag-in">Included</span></p><ul>' +
+              s.included.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul>';
+      html += '<p><span class="doc-tag doc-tag-out">Excluded</span></p><ul>' +
+              s.excluded.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul>';
+      if (s.note) html += '<p><em>' + s.note + '</em></p>';
+    } else if (s.type === 'tech') {
+      html += '<details class="doc-tech"><summary>' + s.summary + '</summary><table><tbody>' +
+              s.rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>'; }).join('') +
+              '</tbody></table></details>';
+    } else if (s.type === 'warn') {
+      html += s.items.map(function (i) { return '<div class="doc-warn"><p>' + i + '</p></div>'; }).join('');
+    }
+
+    sec.innerHTML = html;
+    body.appendChild(sec);
+  });
+
+  var overlay = document.getElementById('doc-overlay');
+  function openDoc() { overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeDoc() { overlay.classList.remove('open'); document.body.style.overflow = ''; }
+  document.getElementById('doc-btn').addEventListener('click', openDoc);
+  document.getElementById('doc-close').addEventListener('click', closeDoc);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) closeDoc(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDoc(); });
+})();
+</script>\n
 </body>
 </html>
