@@ -1,7 +1,7 @@
 'use strict';
 const https = require('https');
 
-const BASE_URL  = 'api-zapier.businesspilot.co.uk';
+const BASE_URL  = 'open-api.businesspilot.co.uk';
 const PAGE_SIZE = 500;
 
 function apiPost(apiKey, endpoint, body) {
