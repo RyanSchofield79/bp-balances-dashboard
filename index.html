@@ -461,7 +461,7 @@ loadData();
 const DASHBOARD_DOC = {
   title: "Outstanding Balances — rules & filters",
   subtitle: "Finance · rschofield-bp-balances.netlify.app · repo: RyanSchofield79/bp-balances-dashboard",
-  version: "v1.0", reviewed: "3 Aug 2026", owner: "Ryan Schofield",
+  version: "v1.1", reviewed: "10 Nov 2026", owner: "Ryan Schofield",
   repo: "https://github.com/RyanSchofield79/bp-balances-dashboard",
   sections: [
     { id:"purpose", nav:"Purpose", title:"What this dashboard answers", type:"list",
@@ -470,6 +470,17 @@ const DASHBOARD_DOC = {
         "Which balances have gone stale — jobs whose status has not moved for two or four weeks.",
         "Filtered by owner, status, contract type and age, so the chasing can be shared out.",
         "It is a <strong>collections chasing list</strong>. It is not an aged debtors report and does not tie to the accounts system."
+      ] },
+    { id:"screen", nav:"Reading the screen", title:"Reading the screen, top to bottom", type:"table",
+      head: ["On screen","What it shows / what to do"],
+      rows: [
+        ["KPI cards","Jobs with a balance, their total job value, the balance due, balance as a % of job value, and the two stalled counts. The two stalled cards don't overlap: &gt;2 Weeks is 14–27 days, &gt;4 Weeks is 28 days or more."],
+        ["Owner · Contract Status · Contract Type","Filters. Each narrows the cards, both charts and the table."],
+        ["Age Flag","Current (under 2 weeks), Stalled &gt;2 weeks (14–27 days) or Stalled &gt;4 weeks (28+ days). Jobs with no status date are treated as Current here."],
+        ["Clear Filters","Resets all four filters. The note beside it says how many are active."],
+        ["Balance by Contract Status · by Contract Type","Doughnuts of the balance due. Hover a slice for the amount and its share."],
+        ["All Outstanding Balances","Every matching job, sorted by balance (click the Balance heading to flip the order), with the job count and total balance above it. Click a column heading to sort. Row colour and the Age badge show how long the job has sat in its status."],
+        ["↻ Refresh","Pulls the contract list from Business Pilot again."]
       ] },
     { id:"source", nav:"Refresh", title:"Where the data comes from & when it updates", type:"table",
       head: ["",""],
@@ -484,8 +495,8 @@ const DASHBOARD_DOC = {
       items: [
         "There is <strong>no period filter</strong> — every live job with money outstanding is shown.",
         "Ageing is measured from <code>currentStatusDate</code>: how long the job has sat in its current status.",
-        "<strong>Stalled &gt;2 Weeks</strong> means 14 days or more without a status change. <strong>Stalled &gt;4 Weeks</strong> means 28 days or more.",
-        "A job with no status date shows a grey “No date” badge and is counted in neither stalled bucket."
+        "<strong>Stalled &gt;2 Weeks</strong> means 14 to 27 days without a status change. <strong>Stalled &gt;4 Weeks</strong> means 28 days or more. A job is in one bucket or the other, never both.",
+        "A job with no status date shows a grey “No date” badge, is counted in neither stalled bucket, and is treated as Current by the Age Flag filter."
       ] },
     { id:"scope", nav:"In / out", title:"What's included and excluded", type:"inout",
       included: [
@@ -504,7 +515,7 @@ const DASHBOARD_DOC = {
         ["Total Job Value","Σ <code>confirmedNetSaleValue</code> of those contracts"],
         ["Total Balance Due","Σ outstanding balance"],
         ["Balance %","Balance due ÷ total job value × 100"],
-        ["Stalled &gt;2 Weeks","No status change for 14 days or more"],
+        ["Stalled &gt;2 Weeks","No status change for 14 to 27 days (the &gt;4 week jobs are not included)"],
         ["Stalled &gt;4 Weeks","No status change for 28 days or more"],
         ["Days","Days since the last status change"]
       ] },
@@ -518,14 +529,14 @@ const DASHBOARD_DOC = {
         ["Net Value","<code>confirmedNetSaleValue</code>"],
         ["Balance","<code>balance</code>, falling back to <code>balanceDue</code>"],
         ["Status / Status Date","<code>currentStatus</code> / <code>currentStatusDate</code>"],
-        ["Install Start","<code>installStart</code>"]
+        ["Install Start","<code>installStart</code> (loaded but not shown on screen)"]
       ] },
     { id:"watch", nav:"Watch-outs", title:"Watch-outs & known limits", type:"warn",
       items: [
         "<strong>Ageing is status age, not invoice age.</strong> “Stalled 4 weeks” means the job has not changed status for a month — it does not mean the money is a month overdue. A balance can be genuinely late while the status keeps moving, and it will not be flagged.",
         "<strong>Not an aged debtors report.</strong> Balances come from Business Pilot, not the accounts system, and take no account of agreed payment terms, deposits or stage payments. It will not reconcile to the ledger.",
         "<strong>“Approved For Install” jobs are hidden.</strong> Money owed on jobs at that stage does not appear at all, so the total understates everything on the books.",
-        "<strong>Jobs with no status date are invisible to the stall counts</strong> — they show a grey “No date” badge and are quietly excluded from both buckets.",
+        "<strong>Jobs with no status date are invisible to the stall counts</strong> — they show a grey “No date” badge, are quietly excluded from both buckets, and appear under Current if you filter by Age Flag.",
         "<strong>The under-£1 rule is a rounding filter</strong>, not a materiality judgement — a genuine 50p balance will never show.",
         "<strong>No saved copy.</strong> If Business Pilot is unreachable the board is empty rather than stale."
       ] },
@@ -533,7 +544,7 @@ const DASHBOARD_DOC = {
       summary: "Endpoints, files and schedule — for maintenance, not for reading the numbers",
       head: ["Item","Detail"],
       rows: [
-        ["API","<code>api-zapier.businesspilot.co.uk</code> · <code>X-Api-Key</code> header"],
+        ["API","<code>open-api.businesspilot.co.uk</code> · <code>X-Api-Key</code> header (moved from api-zapier on 19 Aug 2026)"],
         ["Endpoint","<code>POST /api/Contracts/find</code>, <code>dateAddedAfter</code> = 5 years ago"],
         ["Paging","Yes — 500 per page"],
         ["Function","<code>/.netlify/functions/contracts</code>"],
